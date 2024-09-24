@@ -10,6 +10,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Toaster } from "sonner";
+import "./index.css";
 import { AppPage } from "./pages/app.tsx";
 import { CallbackPage } from "./pages/callback.tsx";
 import { LoginPage } from "./pages/login.tsx";
