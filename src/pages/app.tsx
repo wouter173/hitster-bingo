@@ -12,6 +12,7 @@ export const AppPage = () => {
   const { nextSong } = useNextSong();
 
   const [revealed, setRevealed] = useState(false);
+  const { currentTrack, isLoading } = useCurrentSong();
 
   return (
     <div className="mx-auto w-fit">
@@ -19,11 +20,50 @@ export const AppPage = () => {
         <h1 className="opacity-70 text-sm">Hey {meData?.display_name}!</h1>
       </header>
 
-      <CurrentTrack revealed={revealed} />
+      {/* preloading image */}
+      {currentTrack && !revealed ? (
+        <img src={currentTrack.item.album.images[0].url} className="hidden" />
+      ) : null}
+
+      {currentTrack && revealed ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-3xl animate-in fade-in -z-10 opacity-50"
+          style={{
+            backgroundImage: `url(${currentTrack.item.album.images[0].url})`,
+          }}
+        />
+      ) : null}
+
+      <div className="relative">
+        <div
+          className="p-4 bg-black/30 rounded-2xl"
+          style={{
+            transition: revealed ? "all 300ms ease-in-out" : "",
+            transform: revealed ? "rotateY(0deg)" : "rotateY(180deg)",
+            backfaceVisibility: "hidden",
+          }}
+        >
+          <CurrentTrack
+            revealed={revealed}
+            currentTrack={currentTrack}
+            isLoading={isLoading}
+          />
+        </div>
+        <div
+          className="absolute inset-0 p-4 bg-black/30 rounded-2xl"
+          style={{
+            transition: revealed ? "all 300ms ease-in-out" : "",
+            transform: revealed ? "rotateY(180deg)" : "rotateY(0deg)",
+            backfaceVisibility: "hidden",
+          }}
+        >
+          <PlaceholderTrackDisplay />
+        </div>
+      </div>
 
       <div className="flex gap-0.5 w-full mt-20">
         <button
-          className="w-full bg-zinc-700 rounded-l-full py-2 active:bg-zinc-600 hover:outline transition-all"
+          className="w-full cursor-pointer py-2 rounded-l-full rounded-r-lg transition-all bg-black/30 backdrop-blur-md hover:bg-black/60 active:bg-black/40"
           onClick={async () => {
             setRevealed(false);
             await nextSong();
@@ -33,7 +73,8 @@ export const AppPage = () => {
         </button>
 
         <button
-          className="w-full bg-zinc-700 rounded-r-full active:bg-zinc-600 hover:outline transition-all rounded-l-sm"
+          disabled={revealed}
+          className="w-full cursor-pointer rounded-r-full transition-all rounded-l-sm bg-black/30 backdrop-blur-md enabled:hover:bg-black/60 enabled:active:bg-black/40 disabled:opacity-25"
           onClick={() => {
             setRevealed(!revealed);
           }}
@@ -45,9 +86,15 @@ export const AppPage = () => {
   );
 };
 
-const CurrentTrack = ({ revealed }: { revealed: boolean }) => {
-  const { currentTrack, isLoading } = useCurrentSong();
-
+const CurrentTrack = ({
+  revealed,
+  currentTrack,
+  isLoading,
+}: {
+  revealed: boolean;
+  isLoading: boolean;
+  currentTrack: ReturnType<typeof useCurrentSong>["currentTrack"];
+}) => {
   if (currentTrack && !isLoading && revealed) {
     return (
       <TrackDisplay
@@ -59,7 +106,13 @@ const CurrentTrack = ({ revealed }: { revealed: boolean }) => {
     );
   }
 
-  console.log({ currentTrack, isLoading, revealed });
+  if (currentTrack && !revealed) {
+    return <PlaceholderTrackDisplay />;
+  }
+
+  if (isLoading) {
+    return <PlaceholderTrackDisplay />;
+  }
 
   if (!currentTrack) {
     return (
@@ -76,9 +129,5 @@ const CurrentTrack = ({ revealed }: { revealed: boolean }) => {
         </div>
       </>
     );
-  }
-
-  if (isLoading || !revealed) {
-    return <PlaceholderTrackDisplay />;
   }
 };

@@ -23,5 +23,11 @@ export const useNextSong = () => {
     },
   });
 
-  return { nextSong: mutateAsync };
+  return {
+    nextSong: () => {
+      // invalidate the current song, to trigger a revalidation which might be struck by a race condition
+      queryClient.invalidateQueries({ queryKey: ["spotify", "song"] });
+      mutateAsync();
+    },
+  };
 };
