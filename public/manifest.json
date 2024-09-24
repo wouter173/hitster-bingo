@@ -1,0 +1,11 @@
+{
+  "theme_color": "#18181B",
+  "background_color": "transparent",
+  "display": "fullscreen",
+  "scope": "/",
+  "start_url": "/",
+  "name": "Music Bingo",
+  "short_name": "Music Bingo",
+  "description": "A sample PWA App using React",
+  "icons": []
+}
