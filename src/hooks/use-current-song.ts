@@ -28,5 +28,5 @@ export const useCurrentSong = () => {
     },
   });
 
-  return { data, isLoading };
+  return { currentTrack: data, isLoading };
 };
