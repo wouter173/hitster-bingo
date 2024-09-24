@@ -8,25 +8,17 @@ export const useMe = () => {
   return useQuery({
     queryKey: ["spotify", "user", "me"],
     queryFn: async () => {
-      if (!token) logout();
-
       const response = await fetch("https://api.spotify.com/v1/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!token) logout();
+      if (response.status === 401) logout();
 
       const result = z
-        .object({
-          display_name: z.string(),
-          email: z.string(),
-        })
+        .object({ display_name: z.string(), email: z.string() })
         .safeParse(await response.json());
 
       if (result.success && result.data) return result.data;
-      logout();
     },
   });
 };

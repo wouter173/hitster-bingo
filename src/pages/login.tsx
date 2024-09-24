@@ -6,6 +6,7 @@ const scopes = [
   "user-read-private",
   "user-read-email",
   "user-modify-playback-state",
+  "user-read-currently-playing",
   // Add more scopes as needed
 ];
 
