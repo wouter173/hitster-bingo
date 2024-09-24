@@ -79,10 +79,12 @@ export const currentSchema = z.object({
     uri: z.string(),
   }),
   currently_playing_type: z.string(),
-  actions: z.object({
-    disallows: z.object({
-      pausing: z.boolean(),
-    }),
-  }),
+  actions: z
+    .object({
+      disallows: z.object({
+        pausing: z.boolean().optional(),
+      }),
+    })
+    .optional(), // In case `actions` itself is sometimes missing
   is_playing: z.boolean(),
 });

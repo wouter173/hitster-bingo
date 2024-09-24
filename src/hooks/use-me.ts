@@ -18,7 +18,9 @@ export const useMe = () => {
         .object({ display_name: z.string(), email: z.string() })
         .safeParse(await response.json());
 
-      if (result.success && result.data) return result.data;
+      if (!result.success) return logout();
+
+      return result.data;
     },
   });
 };

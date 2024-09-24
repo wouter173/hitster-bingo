@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { currentSchema } from "../schemas/current";
 import { useAuth } from "./user-auth";
 
@@ -6,7 +7,7 @@ export const useCurrentSong = () => {
   const { token, logout } = useAuth();
 
   const { data, isLoading } = useQuery({
-    refetchInterval: 500,
+    refetchInterval: 1000,
     queryKey: ["spotify", "song", "current"],
     queryFn: async () => {
       const response = await fetch(
@@ -17,7 +18,13 @@ export const useCurrentSong = () => {
       if (response.status === 401) logout();
 
       const result = currentSchema.safeParse(await response.json());
-      if (result.success && result.data) return result.data;
+      if (!result.success) {
+        toast.error("Failed to fetch current song");
+        console.error(result.error);
+        return null;
+      }
+
+      return result.data;
     },
   });
 
